@@ -1,0 +1,240 @@
+##http://www.diegocalvo.es/manipulacion-datos-r-forma-simple/
+##https://www.ins.gov.co/Noticias/Paginas/Coronavirus.aspx
+library(foreign)
+library(ggplot2)
+library(psych)
+library(cluster)
+library(factoextra)
+
+
+
+
+Covid=Casos1
+names(Covid)
+summary(Covid)
+class(Covid)
+str(Covid)
+dim(Covid)
+head(Covid)
+tail(Covid)
+##library(help = "datasets")
+##y=table(Covid$Tipo*,Covid$Sexo)
+table(Covid$Sexo, Covid$Edad)
+table(Covid$`Ciudad de ubicación`)
+table(Covid$`País de procedencia`)
+table(Covid$`Atención**`)
+table(Covid$`Fecha de diagnóstico`)
+
+table(Covid$Sexo)
+prop.table(table(Covid$Sexo))*100 # tabla en porcentajes
+
+table(Covid$Edad) 
+
+##table(Covid$)
+plot(Covid$Edad)
+
+
+library(foreign)
+tabla.4 <- freq(ordered(Covid$Edad), plot = FALSE)
+tabla.4
+##https://rpubs.com/dsulmont/37910
+library(gmodels)
+CrossTable(Covid$Sexo, Covid$`Departamento o Distrito`)
+CrossTable(Covid$`Ciudad de ubicación`, Covid$`País de procedencia`)
+barplot(table(Covid$Sexo), horiz=TRUE)
+
+##https://www.statmethods.net/stats/frequencies.html
+
+library(MASS)
+mytable <- xtabs(~Sexo+Edad, data=Covid)
+mytable
+
+
+table(Covid$Edad, Covid$Sexo)
+plot(Covid)
+
+#boxplot() ~ Edad, data = Covid,
+#       col = "light grey")
+
+###https://gonzalezgouveia.com/como-superponer-varias-graficas-en-ggplot-con-r-y-rstudio/
+ggplot(data = Covid,
+       mapping = aes(x = Sexo,
+                     y = Edad,
+                     color =`Ciudad de ubicación` )) +
+  geom_point() +
+  geom_smooth(size = 2)
+###########################
+library(car)
+p51dr <- factor(recode(Covid$Sexo, "1; 2")) # recodificamos
+levels(p51dr) <- c("Hombre", "Mujer")
+
+plot(p51dr)
+###############https://es.r4ds.hadley.nz/visualizaci%C3%B3n-de-datos.html
+
+ggplot(data = Covid) +
+  geom_point(mapping = aes(x = Edad, y = Sexo, color = Sexo))
+
+#ggplot(data = millas) +
+ # geom_point(mapping = aes(x = motor, y = autopista, color = clase))
+
+
+# Izquierda
+ggplot(data = millas) +
+  geom_point(mapping = aes(x = motor, y = autopista, alpha = clase))
+
+# Derecha
+#ggplot(data = Covid) +
+#  geom_point(mapping = aes(x = Edad, y = Sexo, shape = Sexo
+                           
+                           
+#ggplot(data = Covid, mapping = aes(x = Edad, y = Sexo)) +
+ #geom_point() +
+ #geom_smooth()
+
+#ggplot(data = Covid) +
+#  geom_bar(mapping = aes(x = Edad, fill = Sexo))
+  
+#ggplot(data = Covid) +
+ # geom_bar(mapping = aes(x = Sexo, fill =Edad))
+
+names(Covid)
+
+
+
+pairs(~ Edad, data=Covid, main="Gráfico 01")
+##head(y)
+
+pairs.panels(Covid, pch=3,main="Gráfico 01.6: Matriz de Dispersión, Histograma y Correlación")
+
+##head(y)
+
+plot(Covid$Edad, main = "Gráfico de barras 1",
+     xlab = "Edad", ylab = "Frecuencia")
+
+
+##https://bookdown.org/gboccardo/manual-ED-UCH/construccion-de-graficos-usando-rstudio-funcionalidades-basicas-y-uso-del-paquete-ggplot2.html
+
+
+hist(Covid$Edad, main = "Histograma de frecuencias 1",
+     xlab = "Edad (años cumplidos)",
+     ylab = "Frecuencia",
+     col = "red")
+
+
+densidad_edad <- density(Covid$Edad)
+plot(densidad_edad, 
+     main = "Histograma de densidad 1",
+     xlab = "Edad (años )",
+     ylab = "Densidad")
+
+
+boxplot(Covid$Edad, main = "Gráfico de cajas 1",
+        outline = TRUE)
+
+
+library(ggplot2)
+#Gráfico de barras : sexo en frecuencias absolutas
+ggplot(Covid, aes(x = Sexo)) +
+  geom_bar(width = 0.4,  fill=rgb(0.1,1,0.5,0.7)) +
+  scale_x_discrete("Sexo") +     # configuración eje X (etiqueta del eje)
+  scale_y_continuous("Frecuencia") +
+  labs(title = "Gráfico de barras 2",
+       subtitle = "Frecuencia absoluta de la variable sexo")
+
+ggplot(Covid, aes(x = as.numeric(Edad))) +
+  geom_histogram(binwidth = 0.6) +
+  scale_x_continuous("Edad (años)") + 
+  scale_y_continuous("Frecuencia") +
+  labs(title = "Histograma de frecuencias 2",
+       subtitle = "Frecuencia absoluta de la variable edad")
+
+
+
+ggplot(Covid, aes(x = Edad)) +
+  geom_density() +
+  scale_y_continuous("Densidad") +
+  scale_x_continuous("Edad") +
+  labs(title = "Histograma de densidad 2",
+       subtitle = "Forma de la distribución de la variable edad")
+
+
+
+###Código
+#plot(BaseIntPol[,2], BaseIntPol[,3], main="Gráfica 01.1a.: Diagrama de Dispersión")
+#abline(lm(BaseIntPol[,3]~BaseIntPol[,2]), col="yellow")
+
+## Cargar delitos de colombia
+#### Seleccionar variables cuantitativas
+#datos=Covid[,c(2,15:19)]
+
+
+num=unlist(lapply(Covid, FUN=is.numeric))
+num
+
+datos=Covid[num]
+datoscuali=Covid[!num]
+ggcorrplot(cor(datos), lab=T)
+
+acpDatos=prcomp(datos, center=T, scale. = T)
+summary(acpDatos)
+ACP=acpDatos$x[,1:2]
+
+plot(datos)
+
+library(FactoMineR)# tiene la función mca
+
+acmDatos=MCA(datoscuali, ncp=100)# por defecto ncp =5)
+summary(acmDatos)
+# las nuevas variables  son 4 de ACP y 9 de ACM
+
+ACM=acmDatos$ind$coord[,1:9]
+datosNuevos=data.frame(ACP, ACM)
+cor(datosNuevos)
+
+library(ggcorrplot)
+library(ggcplot2)
+
+
+ggcorrplot(cor(datosNuevos), lab=T)
+### Agrupamiento
+grupo=kmeans(datosNuevos, centers=3)
+
+grupo$cluster
+grupo$centers
+# crear una nueva variable de la BD
+Hepatitis=data.frame(Hepatitis,grupo=grupo$cluster) 
+#### Algunos elementos para escoger el número de grupos
+
+library("NbClust")
+set.seed(123)
+indicesCluster <- NbClust(datosNuevos,distance="euclidean",
+                          min.nc = 2, max.nc = 10, 
+                          method = "kmeans", index ="all") 
+
+indicesCluster
+factoextra::fviz_nbclust(indicesCluster)# cuantos grupos k=2
+
+### Indice de silueta
+arbol=eclust(datosNuevos, k=2,FUNcluster = "kmeans",stand=T)
+fviz_silhouette(arbol)
+arbol$silinfo$widths
+
+
+
+#FIN
+
+datos1=data.frame(datos, grupos=arbol$cluster)
+aggregate(.~grupos, data=datos1, FUN=mean)
+aggregate(.~1, data=datos1, FUN=mean)
+##### Dos grupos #####
+acpDatos=prcomp(datos, center = TRUE,scale. = TRUE)
+library(devtools)
+library(ggplot2)
+install_github("vqv/ggbiplot")
+##### Si no funciona, copiar en la URL https://api.github.com/repos/vqv/ggbiplot/tarball/master
+#### Y ejecutar ese archivo.
+
+library(ggbiplot)
+ggbiplot(acpDatos,ellipse=FALSE,circle=FALSE,labels=row.names(datos),groups =arbol$cluster)+
+  coord_cartesian(xlim=c(-3,4), ylim=c(-3,4))
+
