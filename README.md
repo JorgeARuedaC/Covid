@@ -1,2 +1,2 @@
 # Covid
-Descriptivo Cvid 
+Descriptivo Covid 
